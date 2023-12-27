@@ -32,6 +32,7 @@ else
 fi
 
 update(){
+    echo "当前脚本:$0"
     if ! curl -fsSLo /root/cattools https://service.miaoer.xyz/cattools/cattools.sh; then
         echo "无法连接更新站点"
 
@@ -47,6 +48,7 @@ update(){
     fi
 
     exec $(readlink -f "$0")
+    echo "替换后脚本:$(readlink -f $0)"
 }
 
 setip(){
