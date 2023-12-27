@@ -31,6 +31,24 @@ else
     exit 1
 fi
 
+update(){
+    if ! curl -fsSL https://service.miaoer.xyz/cattools/cattools.sh -o $(readlink -f "$0"); then
+        echo "无法连接更新站点"
+
+        if ! curl -fsSL https://fastly.jsdelivr.net/gh/miaoermua/cattools@main/repo/mt798x/cattools.sh -o $(readlink -f "$0"); then
+            echo "无法连接更新仓库" 
+
+           if ! curl -fsSL https://raw.githubusercontent.com/miaoermua/service/main/cattools/cattools.sh -o $(readlink -f "$0"); then
+               echo "无法连接更新仓库" 
+               echo "无法连接互联网,请联系作者."
+               return 
+           fi
+        fi
+    fi
+
+    exec $(readlink -f "$0")
+}
+
 setip(){
     read -p "请输入 IP(默认为 $DEFAULT_IP): " input_ip
     if [ -z $input_ip ]; then
@@ -124,16 +142,19 @@ debug(){
         if [ -f /www/logs.txt ]; then
               rm /www/logs.txt
         fi
-
-           cat /etc/banner > /www/logs.txt
+	
+           cat /etc/banner >> /www/logs.txt
+           echo "## RELEASE" >> /www/logs.txt
            cat /etc/catwrt_release >> /www/logs.txt
+           echo "## SYSLOG" >> /www/logs.txt
            logread >> /www/logs.txt
+           echo "## DMESG" >> /www/logs.txt
            dmesg >> /www/logs.txt
 
         lan_ip=$(uci get network.lan.ipaddr)
 	
-        echo "系统日志已收集到 /www/logs.txt" 
-        echo "访问下载 http://$lan_ip/logs.txt"
+        echo "日志已收集到 /www/logs.txt" 
+        echo "使用浏览器访问下载 http://$lan_ip/logs.txt"
 	exit
 }
 
@@ -143,6 +164,7 @@ bypass_gateway(){
         exit
 }
 
+update
 
 while :; do
     clear
