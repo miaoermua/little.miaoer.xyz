@@ -9,7 +9,6 @@
 
 DEFAULT_IP="192.168.1.4"
 RELEASE="/etc/catwrt_release"
-OPENWRT_RELEASE"/etc/openwrt_release"
 AMD64_REPO="https://fastly.jsdelivr.net/gh/miaoermua/cattools@main/repo/amd64/distfeeds.conf"
 MT798X_REPO="https://fastly.jsdelivr.net/gh/miaoermua/cattools@main/repo/mt798x/distfeeds.conf"
 AMD64_EFI_SYSUP="https://github.com/miaoermua/CatWrt/releases/download/v23.8/CatWrt.v23.8.x86_64-squashfs-combined-efi.img.gz"
@@ -22,6 +21,8 @@ if [ $(id -u) != "0" ]; then
     exit 1
 fi
 
+release=$(cat /etc/openwrt_release)
+
 if [[ $release =~ "OpenWrt" ]]; then
 else
     echo "Abnormal system environment..."
@@ -31,14 +32,14 @@ fi
 
 update(){
     if ! curl -fsSLo /root/cattools https://service.miaoer.xyz/cattools/cattools.sh; then
-        echo "无法连接更新站点"
+        echo "[main site]Unable to connect to update site! 无法连接更新站点!"
 
         if ! curl -fsSLo /root/cattools https://fastly.jsdelivr.net/gh/miaoermua/cattools@main/repo/mt798x/cattools.sh; then
-            echo "无法连接更新仓库" 
+            echo "[site 2]Unable to connect to update site! 无法连接更新仓库" 
 
            if ! curl -fsSLo /root/cattools https://raw.githubusercontent.com/miaoermua/service/main/cattools/cattools.sh; then
-               echo "无法连接更新仓库" 
-               echo "无法连接互联网,请联系作者！"
+               echo "[site 3]Unable to connect to update site! 无法连接更新仓库" 
+               echo "Unable to connect, please check the internet! 无法连接互联网,请联系作者!"
                return 
            fi
         fi
